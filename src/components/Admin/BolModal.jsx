@@ -315,7 +315,21 @@ export function BolModal({ load, onClose, onBolCreated }) {
   const handlePrint = async () => {
     setSaving(true);
     try {
-      const fileName = load.bol_number + '_' + (customer?.name || 'Unknown').replace(/\s+/g, '_') + '.pdf';
+      // Build base filename, check for duplicates
+      const baseName = load.bol_number + '_' + (customer?.name || 'Unknown').replace(/\s+/g, '_');
+      const { data: existing } = await supabase
+        .from('bol_log')
+        .select('file_name')
+        .like('file_name', baseName + '%');
+
+      let fileName;
+      if (!existing || existing.length === 0) {
+        fileName = baseName + '.pdf';
+      } else {
+        fileName = baseName + '_' + (existing.length + 1) + '.pdf';
+      }
+
+      // Save to bol_log
       await supabase.from('bol_log').insert([{
         load_id: load.id,
         bol_number: load.bol_number,
@@ -333,8 +347,15 @@ export function BolModal({ load, onClose, onBolCreated }) {
         file_name: fileName,
         status: 'active',
       }]);
-    } catch (err) { console.error('BOL log error:', err); }
 
+      // Auto-set load status to shipped
+      await supabase.from('loads').update({
+        status: 'shipped',
+        completed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }).eq('id', load.id);
+
+    } catch (err) { console.error('BOL log error:', err); }
     setSaving(false);
     setSaved(true);
 
