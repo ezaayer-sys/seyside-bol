@@ -3,10 +3,10 @@ import { useEffect } from 'react';
 import { useAuthStore } from './store/store';
 import LoginScreen from './components/Auth/LoginScreen';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
+import SupervisorDashboard from './components/Supervisor/SupervisorDashboard';
 
-const AdminScheduleView = () => <div className="p-8">Admin Schedule View (Coming Soon)</div>;
-const SupervisorDashboard = () => <div className="p-8">Supervisor Dashboard (Coming Soon)</div>;
-const MonthlyScheduleViewer = () => <div className="p-8">Monthly Schedule Viewer (Coming Soon)</div>;
+const AdminScheduleView = () => <div style={{ padding: '40px', color: '#94a3b8', background: '#0a0f1a', minHeight: '100vh' }}>Admin Schedule View (Coming Soon)</div>;
+const MonthlyScheduleViewer = () => <div style={{ padding: '40px', color: '#94a3b8', background: '#0a0f1a', minHeight: '100vh' }}>Monthly Schedule Viewer (Coming Soon)</div>;
 
 export default function App() {
   const initialize = useAuthStore((state) => state.initialize);
