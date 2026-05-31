@@ -481,10 +481,6 @@ export default function AdminScheduleView({ onViewChange, currentView }) {
   const [selectedLoad, setSelectedLoad] = useState(null);
   const [showBulk, setShowBulk] = useState(false);
 
-  if (showBulk) {
-    return <BulkScheduler onBack={() => setShowBulk(false)} onLoadsAdded={() => { setShowBulk(false); fetchLoads(); }} />;
-  }
-
   const weekStart = startOfWeek(currentDate);
   const weekEnd = addDays(weekStart, 6);
   const monthStart = startOfMonth(currentDate);
@@ -529,6 +525,10 @@ export default function AdminScheduleView({ onViewChange, currentView }) {
   const rangeLabel = viewMode === 'week'
     ? `${formatShortDate(weekStart)} — ${formatShortDate(weekEnd)}`
     : formatMonthYear(currentDate);
+
+  if (showBulk) {
+    return <BulkScheduler onBack={() => setShowBulk(false)} onLoadsAdded={() => { setShowBulk(false); fetchLoads(); }} />;
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#0a0f1a', color: '#f1f5f9', fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif" }}>
