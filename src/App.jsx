@@ -6,6 +6,7 @@ import ProtectedRoute from './components/Auth/ProtectedRoute';
 import SupervisorDashboard from './components/Supervisor/SupervisorDashboard';
 import AdminScheduleView from './components/Admin/AdminScheduleView';
 import CustomerManagement from './components/Admin/CustomerManagement';
+import BolLog from './components/Admin/BolLog';
 
 function MonthlyScheduleViewer() {
   const logout = useAuthStore((state) => state.logout);
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/admin/schedule" element={<ProtectedRoute requiredRole="admin"><AdminScheduleView /></ProtectedRoute>} />
         <Route path="/admin/customers" element={<ProtectedRoute requiredRole="admin"><CustomerManagement onBack={() => window.location.href = '/admin/schedule'} /></ProtectedRoute>} />
+        <Route path="/admin/bol-log" element={<ProtectedRoute requiredRole="admin"><BolLog onBack={() => window.location.href = '/admin/schedule'} /></ProtectedRoute>} />
         <Route path="/supervisor/dashboard" element={<ProtectedRoute requiredRole="supervisor"><SupervisorDashboard /></ProtectedRoute>} />
         <Route path="/viewer/schedule" element={<ProtectedRoute requiredRole="view_only"><MonthlyScheduleViewer /></ProtectedRoute>} />
         <Route path="/" element={<Navigate to="/login" replace />} />
