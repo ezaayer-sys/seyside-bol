@@ -5,8 +5,49 @@ import LoginScreen from './components/Auth/LoginScreen';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import SupervisorDashboard from './components/Supervisor/SupervisorDashboard';
 
-const AdminScheduleView = () => <div style={{ padding: '40px', color: '#94a3b8', background: '#0a0f1a', minHeight: '100vh' }}>Admin Schedule View (Coming Soon)</div>;
-const MonthlyScheduleViewer = () => <div style={{ padding: '40px', color: '#94a3b8', background: '#0a0f1a', minHeight: '100vh' }}>Monthly Schedule Viewer (Coming Soon)</div>;
+function AdminScheduleView() {
+  const logout = useAuthStore((state) => state.logout);
+  return (
+    <div style={{ padding: '40px', color: '#94a3b8', background: '#0a0f1a', minHeight: '100vh' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+        <span style={{ color: '#c4a35a', fontSize: '20px', fontWeight: '800' }}>🛢️ Speyside — Admin</span>
+        <button
+          onClick={logout}
+          style={{
+            background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)',
+            color: '#ef4444', padding: '8px 16px', borderRadius: '6px',
+            fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+          }}
+        >
+          Sign Out
+        </button>
+      </div>
+      <div style={{ color: '#475569', fontSize: '16px' }}>Admin Schedule View — Coming Soon</div>
+    </div>
+  );
+}
+
+function MonthlyScheduleViewer() {
+  const logout = useAuthStore((state) => state.logout);
+  return (
+    <div style={{ padding: '40px', color: '#94a3b8', background: '#0a0f1a', minHeight: '100vh' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
+        <span style={{ color: '#c4a35a', fontSize: '20px', fontWeight: '800' }}>🛢️ Speyside — Schedule</span>
+        <button
+          onClick={logout}
+          style={{
+            background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)',
+            color: '#ef4444', padding: '8px 16px', borderRadius: '6px',
+            fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+          }}
+        >
+          Sign Out
+        </button>
+      </div>
+      <div style={{ color: '#475569', fontSize: '16px' }}>Monthly Schedule Viewer — Coming Soon</div>
+    </div>
+  );
+}
 
 export default function App() {
   const initialize = useAuthStore((state) => state.initialize);
