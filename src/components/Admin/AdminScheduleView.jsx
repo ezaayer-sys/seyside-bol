@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/store';
 import { supabase } from '../../lib/supabase';
+import BulkScheduler from './BulkScheduler';
 
 function toDateStr(date) {
   return date.toISOString().split('T')[0];
@@ -465,7 +466,7 @@ function MonthView({ loads, currentDate, onLoadClick, onAddLoad }) {
   );
 }
 
-export default function AdminScheduleView() {
+export default function AdminScheduleView({ onViewChange, currentView }) {
   const logout = useAuthStore(s => s.logout);
   const user = useAuthStore(s => s.user);
 
@@ -478,6 +479,11 @@ export default function AdminScheduleView() {
   const [showNewLoad, setShowNewLoad] = useState(false);
   const [newLoadDate, setNewLoadDate] = useState(null);
   const [selectedLoad, setSelectedLoad] = useState(null);
+  const [showBulk, setShowBulk] = useState(false);
+
+  if (showBulk) {
+    return <BulkScheduler onBack={() => setShowBulk(false)} onLoadsAdded={() => { setShowBulk(false); fetchLoads(); }} />;
+  }
 
   const weekStart = startOfWeek(currentDate);
   const weekEnd = addDays(weekStart, 6);
@@ -540,9 +546,22 @@ export default function AdminScheduleView() {
           <button onClick={() => window.location.href = '/admin/bol-log'} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '7px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', fontFamily: 'inherit' }}>
             📋 BOL Log
           </button>
+          <button onClick={() => setShowBulk(true)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '7px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', fontFamily: 'inherit' }}>
+            📅 Bulk Schedule
+          </button>
           <button onClick={() => setShowNewLoad(true)} style={{ background: '#c4a35a', border: 'none', color: '#1a1a1a', padding: '8px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit' }}>
             + Add Load
           </button>
+          {onViewChange && (
+            <select
+              value={currentView || 'schedule'}
+              onChange={e => onViewChange(e.target.value)}
+              style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '6px', padding: '7px 12px', color: '#f1f5f9', fontSize: '13px', outline: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
+            >
+              <option value="schedule">Admin Schedule</option>
+              <option value="supervisor">Supervisor View</option>
+            </select>
+          )}
           <button onClick={logout} style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', padding: '7px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit' }}>Sign Out</button>
         </div>
       </div>
