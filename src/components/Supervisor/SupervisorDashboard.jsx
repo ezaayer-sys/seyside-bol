@@ -20,6 +20,7 @@ const STATUS_CONFIG = {
   in_process: { label: 'In Process', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
   completed: { label: 'Completed', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
   pickup_ready: { label: 'Pickup Ready', color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)' },
+  shipped: { label: 'Shipped', color: '#c4a35a', bg: 'rgba(196,163,90,0.15)' },
 };
 
 const CATEGORY_ORDER = ['core', 'craft', 'freight', 'ltl_spot'];
@@ -140,6 +141,7 @@ function LoadEditModal({ load, onClose, onSave, onPrintBol }) {
               <option value="in_process">In Process</option>
               <option value="completed">Completed</option>
               <option value="pickup_ready">Pickup Ready</option>
+              <option value="shipped">Shipped</option>
             </select>
           </div>
         </div>
@@ -274,6 +276,7 @@ export default function SupervisorDashboard() {
   const inProcess = dayLoads.filter(l => l.status === 'in_process').length;
   const completed = dayLoads.filter(l => l.status === 'completed').length;
   const pickupReady = dayLoads.filter(l => l.status === 'pickup_ready').length;
+  const shipped = dayLoads.filter(l => l.status === 'shipped').length;
   const alerts = dayLoads.filter(l => !l.trailer_number || !l.seal_number);
 
   const grouped = {};
@@ -335,6 +338,7 @@ export default function SupervisorDashboard() {
             <StatCard icon="⚙️" label="In Process" value={inProcess} color="#f59e0b" />
             <StatCard icon="✅" label="Completed" value={completed} color="#10b981" />
             <StatCard icon="📤" label="Pickup Ready" value={pickupReady} color="#8b5cf6" />
+            <StatCard icon="🚚" label="Shipped" value={shipped} color="#c4a35a" />
           </div>
 
           {/* Load Groups */}
@@ -363,6 +367,7 @@ export default function SupervisorDashboard() {
                 { label: 'In Process', count: inProcess, color: '#f59e0b' },
                 { label: 'Completed', count: completed, color: '#10b981' },
                 { label: 'Pickup Ready', count: pickupReady, color: '#8b5cf6' },
+                { label: 'Shipped', count: shipped, color: '#c4a35a' },
               ].map(({ label, count, color }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
