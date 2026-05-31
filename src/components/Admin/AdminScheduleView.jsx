@@ -55,6 +55,8 @@ const STATUS_CONFIG = {
   in_process: { label: 'In Process', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
   completed: { label: 'Completed', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
   pickup_ready: { label: 'Pickup Ready', color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)' },
+  shipped: { label: 'Shipped', color: '#c4a35a', bg: 'rgba(196,163,90,0.15)' },
+  shipped: { label: 'Shipped', color: '#c4a35a', bg: 'rgba(196,163,90,0.15)' },
 };
 
 const CATEGORY_COLORS = {
@@ -338,6 +340,7 @@ function LoadDetailPanel({ load, onClose, onRefresh, userId }) {
                 <option value="in_process">In Process</option>
                 <option value="completed">Completed</option>
                 <option value="pickup_ready">Pickup Ready</option>
+              <option value="shipped">Shipped</option>
               </select>
             </div>
             <div>
