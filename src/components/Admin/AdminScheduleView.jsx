@@ -534,6 +534,9 @@ export default function AdminScheduleView() {
           <button onClick={() => window.location.href = '/admin/customers'} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '7px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', fontFamily: 'inherit' }}>
             👥 Customers
           </button>
+          <button onClick={() => window.location.href = '/admin/bol-log'} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '7px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', fontFamily: 'inherit' }}>
+            📋 BOL Log
+          </button>
           <button onClick={() => setShowNewLoad(true)} style={{ background: '#c4a35a', border: 'none', color: '#1a1a1a', padding: '8px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit' }}>
             + Add Load
           </button>
