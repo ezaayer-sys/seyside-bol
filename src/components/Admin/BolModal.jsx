@@ -79,7 +79,10 @@ function SignaturePad({ onSave, onClear }) {
 
 function buildBolHtml({ load, customer, carrier, shipperName, driverSigDataUrl, bolNumber, shipDate }) {
   const specs = load.barrel_specs_custom || [];
-  const weight = (load.barrel_count || 0) * 100;
+  const weight = isNonBarrel ? 0 : (load.barrel_count || 0) * 100;
+  const shippingUnits = isNonBarrel
+    ? (specs[0]?.size || '1')
+    : load.barrel_count;
   const addr = load.ship_to_address || customer?.shipping_address || {};
 
   const d = new Date(shipDate + 'T12:00:00');
@@ -200,7 +203,7 @@ function buildBolHtml({ load, customer, carrier, shipperName, driverSigDataUrl, 
     </thead>
     <tbody>
       <tr>
-        <td style="font-size:15px;font-weight:bold;text-align:center;padding:8px 4px;">${load.barrel_count}</td>
+        <td style="font-size:15px;font-weight:bold;text-align:center;padding:8px 4px;">${shippingUnits}</td>
         <td></td>
         <td style="padding:8px 6px;font-size:11px;line-height:1.6;">${descHtml}</td>
         <td style="text-align:center;padding:8px 4px;">100</td>
