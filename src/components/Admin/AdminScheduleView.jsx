@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAuthStore } from '../../store/store';
 import { supabase } from '../../lib/supabase';
 import BulkScheduler from './BulkScheduler';
+import WalkInBol from './WalkInBol';
+import CarrierManagement from './CarrierManagement';
 
 function toDateStr(date) {
   return date.toISOString().split('T')[0];
@@ -480,6 +482,8 @@ export default function AdminScheduleView({ onViewChange, currentView }) {
   const [newLoadDate, setNewLoadDate] = useState(null);
   const [selectedLoad, setSelectedLoad] = useState(null);
   const [showBulk, setShowBulk] = useState(false);
+  const [showWalkIn, setShowWalkIn] = useState(false);
+  const [showCarriers, setShowCarriers] = useState(false);
 
   const weekStart = startOfWeek(currentDate);
   const weekEnd = addDays(weekStart, 6);
@@ -526,6 +530,10 @@ export default function AdminScheduleView({ onViewChange, currentView }) {
     ? `${formatShortDate(weekStart)} — ${formatShortDate(weekEnd)}`
     : formatMonthYear(currentDate);
 
+  if (showCarriers) {
+    return <CarrierManagement onBack={() => setShowCarriers(false)} />;
+  }
+
   if (showBulk) {
     return <BulkScheduler onBack={() => setShowBulk(false)} onLoadsAdded={() => { setShowBulk(false); fetchLoads(); }} />;
   }
@@ -546,8 +554,14 @@ export default function AdminScheduleView({ onViewChange, currentView }) {
           <button onClick={() => window.location.href = '/admin/bol-log'} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '7px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', fontFamily: 'inherit' }}>
             📋 BOL Log
           </button>
+          <button onClick={() => setShowCarriers(true)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '7px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', fontFamily: 'inherit' }}>
+            🚚 Carriers
+          </button>
           <button onClick={() => setShowBulk(true)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '7px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', fontFamily: 'inherit' }}>
             📅 Bulk Schedule
+          </button>
+          <button onClick={() => setShowWalkIn(true)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', padding: '7px 14px', borderRadius: '6px', fontSize: '13px', fontWeight: '500', cursor: 'pointer', fontFamily: 'inherit' }}>
+            🚪 Walk-in BOL
           </button>
           <button onClick={() => setShowNewLoad(true)} style={{ background: '#c4a35a', border: 'none', color: '#1a1a1a', padding: '8px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', fontFamily: 'inherit' }}>
             + Add Load
@@ -605,6 +619,9 @@ export default function AdminScheduleView({ onViewChange, currentView }) {
 
       {selectedLoad && (
         <LoadDetailPanel load={selectedLoad} userId={user?.id} onClose={() => setSelectedLoad(null)} onRefresh={fetchLoads} />
+      )}
+      {showWalkIn && (
+        <WalkInBol onClose={() => { setShowWalkIn(false); fetchLoads(); }} />
       )}
     </div>
   );
