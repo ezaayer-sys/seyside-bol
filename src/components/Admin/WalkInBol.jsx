@@ -87,7 +87,7 @@ export default function WalkInBol({ onClose }) {
 
     // Create the load
     // Build specs/description for non-barrel items
-    const customSpecs = !isBarrels ? [{ size: itemQuantity + ' ' + itemUnit, wood: itemDescription, char_level: null, bung_orientation: null }] : (specs.length > 0 ? specs : null);
+    const customSpecs = !isBarrels ? [{ walk_in: true, description: itemDescription, quantity: itemQuantity, unit: itemUnit }] : (specs.length > 0 ? specs : null);
     const finalBarrelCount = isBarrels ? parseInt(barrelCount) : 1;
 
     const loadData = {
