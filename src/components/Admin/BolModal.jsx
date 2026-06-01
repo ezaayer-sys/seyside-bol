@@ -356,6 +356,61 @@ export function BolModal({ load, onClose, onBolCreated }) {
       }).eq('id', load.id);
 
     } catch (err) { console.error('BOL log error:', err); }
+    // Send email notification
+    try {
+      const resendKey = import.meta.env.VITE_RESEND_API_KEY;
+      const notifyEmail = import.meta.env.VITE_NOTIFY_EMAIL || 'ezaayer@speysidebci.com';
+      const fromEmail = import.meta.env.VITE_FROM_EMAIL || 'onboarding@resend.dev';
+
+      if (resendKey) {
+        const shipDateFormatted = new Date(load.ship_date + 'T12:00:00').toLocaleDateString('en-US', {
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        const emailHtml = \`
+          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
+            <div style="background:#2d5016;color:#fff;padding:16px 20px;border-radius:8px 8px 0 0;">
+              <h2 style="margin:0;font-size:18px;">🛢️ BOL Printed — \${load.bol_number}</h2>
+            </div>
+            <div style="background:#f5f5f5;padding:20px;border-radius:0 0 8px 8px;border:1px solid #ddd;">
+              <table style="width:100%;border-collapse:collapse;">
+                <tr><td style="padding:8px 0;color:#666;width:140px;"><b>BOL Number</b></td><td style="padding:8px 0;font-weight:bold;color:#2d5016;">\${load.bol_number}</td></tr>
+                <tr><td style="padding:8px 0;color:#666;"><b>Customer</b></td><td style="padding:8px 0;">\${customer?.name || '—'}</td></tr>
+                <tr><td style="padding:8px 0;color:#666;"><b>Ship Date</b></td><td style="padding:8px 0;">\${shipDateFormatted}</td></tr>
+                <tr><td style="padding:8px 0;color:#666;"><b>Barrels</b></td><td style="padding:8px 0;">\${load.barrel_count} bbls (\${(load.barrel_count * 100).toLocaleString()} lbs)</td></tr>
+                <tr><td style="padding:8px 0;color:#666;"><b>Carrier</b></td><td style="padding:8px 0;">\${carrier?.name || '—'}</td></tr>
+                <tr><td style="padding:8px 0;color:#666;"><b>Trailer No.</b></td><td style="padding:8px 0;">\${load.trailer_number || '—'}</td></tr>
+                <tr><td style="padding:8px 0;color:#666;"><b>Seal No.</b></td><td style="padding:8px 0;">\${load.seal_number || '—'}</td></tr>
+                <tr><td style="padding:8px 0;color:#666;"><b>PO Number</b></td><td style="padding:8px 0;">\${load.po_number || '—'}</td></tr>
+                <tr><td style="padding:8px 0;color:#666;"><b>Signed By</b></td><td style="padding:8px 0;">\${finalShipperName}</td></tr>
+              </table>
+              <div style="margin-top:16px;padding-top:16px;border-top:1px solid #ddd;text-align:center;">
+                <a href="https://seyside-bol1.speysideshipments.workers.dev/admin/bol-log" style="background:#2d5016;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-weight:bold;">
+                  View BOL Log
+                </a>
+              </div>
+            </div>
+          </div>
+        \`;
+
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': \`Bearer \${resendKey}\`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: fromEmail,
+            to: [notifyEmail],
+            subject: \`BOL Printed — \${load.bol_number} | \${customer?.name || 'Unknown'}\`,
+            html: emailHtml,
+          }),
+        });
+      }
+    } catch (emailErr) {
+      console.warn('Email notification failed (non-critical):', emailErr);
+    }
+
     setSaving(false);
     setSaved(true);
 
