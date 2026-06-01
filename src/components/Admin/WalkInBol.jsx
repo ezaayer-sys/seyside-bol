@@ -15,6 +15,10 @@ export default function WalkInBol({ onClose }) {
   const [carriers, setCarriers] = useState([]);
   const [poNumber, setPoNumber] = useState('');
   const [notes, setNotes] = useState('');
+  const [itemDescription, setItemDescription] = useState('');
+  const [itemQuantity, setItemQuantity] = useState('');
+  const [itemUnit, setItemUnit] = useState('Barrels');
+  const [isBarrels, setIsBarrels] = useState(true);
   const [loading, setLoading] = useState(true);
   const [showBolPrint, setShowBolPrint] = useState(false);
   const [createdLoad, setCreatedLoad] = useState(null);
@@ -52,7 +56,9 @@ export default function WalkInBol({ onClose }) {
       : customCustomerName.trim();
 
     if (!finalCustomerName) { setError('Please enter a customer name'); return; }
-    if (!barrelCount || barrelCount < 1) { setError('Please enter barrel count'); return; }
+    if (isBarrels && (!barrelCount || barrelCount < 1)) { setError('Please enter barrel count'); return; }
+    if (!isBarrels && !itemDescription.trim()) { setError('Please enter item description'); return; }
+    if (!isBarrels && !itemQuantity.trim()) { setError('Please enter quantity'); return; }
 
     setSaving(true);
     setError('');
@@ -80,12 +86,16 @@ export default function WalkInBol({ onClose }) {
     const shipAddress = selectedCustomer?.shipping_address || null;
 
     // Create the load
+    // Build specs/description for non-barrel items
+    const customSpecs = !isBarrels ? [{ size: itemQuantity + ' ' + itemUnit, wood: itemDescription, char_level: null, bung_orientation: null }] : (specs.length > 0 ? specs : null);
+    const finalBarrelCount = isBarrels ? parseInt(barrelCount) : 1;
+
     const loadData = {
       customer_id: customerId || null,
       ship_date: shipDate,
       po_number: poNumber || null,
-      barrel_count: parseInt(barrelCount),
-      barrel_specs_custom: specs.length > 0 ? specs : null,
+      barrel_count: finalBarrelCount,
+      barrel_specs_custom: customSpecs,
       status: 'scheduled',
       bol_number: bolNumber,
       bol_month_year: monthYear,
@@ -198,26 +208,81 @@ export default function WalkInBol({ onClose }) {
               )}
             </div>
 
-            {/* Barrel Count */}
+            {/* Item Type Toggle */}
             <div>
-              <label style={labelStyle}>Number of Barrels *</label>
-              <input
-                type="number"
-                min="1"
-                max="288"
-                value={barrelCount}
-                onChange={e => setBarrelCount(e.target.value)}
-                style={inputStyle}
-              />
-              {barrelCount > 288 && (
-                <div style={{ color: '#f59e0b', fontSize: '12px', marginTop: '4px' }}>
-                  ⚠ Over 288 — this will be a partial load
+              <label style={labelStyle}>Item Type</label>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                <button
+                  onClick={() => setIsBarrels(true)}
+                  style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px', fontWeight: '600', background: isBarrels ? '#c4a35a' : 'rgba(255,255,255,0.06)', color: isBarrels ? '#1a1a1a' : '#94a3b8' }}
+                >
+                  🛢️ Barrels
+                </button>
+                <button
+                  onClick={() => setIsBarrels(false)}
+                  style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px', fontWeight: '600', background: !isBarrels ? '#c4a35a' : 'rgba(255,255,255,0.06)', color: !isBarrels ? '#1a1a1a' : '#94a3b8' }}
+                >
+                  📦 Other Item
+                </button>
+              </div>
+
+              {isBarrels ? (
+                <div>
+                  <label style={labelStyle}>Number of Barrels *</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="288"
+                    value={barrelCount}
+                    onChange={e => setBarrelCount(e.target.value)}
+                    style={inputStyle}
+                  />
+                  {barrelCount > 288 && (
+                    <div style={{ color: '#f59e0b', fontSize: '12px', marginTop: '4px' }}>
+                      ⚠ Over 288 — this will be a partial load
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div>
+                    <label style={labelStyle}>Description *</label>
+                    <input
+                      type="text"
+                      value={itemDescription}
+                      onChange={e => setItemDescription(e.target.value)}
+                      placeholder="e.g. Barrel Heads, Staves, Hardware..."
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <div style={{ flex: 1 }}>
+                      <label style={labelStyle}>Quantity *</label>
+                      <input
+                        type="text"
+                        value={itemQuantity}
+                        onChange={e => setItemQuantity(e.target.value)}
+                        placeholder="e.g. 100"
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <label style={labelStyle}>Unit</label>
+                      <input
+                        type="text"
+                        value={itemUnit}
+                        onChange={e => setItemUnit(e.target.value)}
+                        placeholder="e.g. Units, Lbs, Boxes..."
+                        style={inputStyle}
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Barrel Specs */}
-            <div>
+            {/* Barrel Specs — only shown for barrel orders */}
+            {isBarrels && <div>
               <label style={labelStyle}>Barrel Specs</label>
               {specs.length > 0 ? (
                 <div style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '8px', padding: '12px' }}>
@@ -237,7 +302,7 @@ export default function WalkInBol({ onClose }) {
                   </div>
                 </div>
               )}
-            </div>
+            </div>}
 
             {/* Carrier */}
             <div>
