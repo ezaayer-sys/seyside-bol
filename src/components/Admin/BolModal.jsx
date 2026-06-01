@@ -79,25 +79,38 @@ function SignaturePad({ onSave, onClear }) {
 
 function buildBolHtml({ load, customer, carrier, shipperName, driverSigDataUrl, bolNumber, shipDate }) {
   const specs = load.barrel_specs_custom || [];
+
+  // Detect walk-in non-barrel items using the walk_in flag
+  const isNonBarrel = specs.length > 0 && specs[0] && specs[0].walk_in === true;
+
   const weight = isNonBarrel ? 0 : (load.barrel_count || 0) * 100;
   const shippingUnits = isNonBarrel
-    ? (specs[0]?.size || '1')
-    : load.barrel_count;
+    ? ((specs[0]?.quantity || '') + (specs[0]?.unit ? ' ' + specs[0].unit : ''))
+    : String(load.barrel_count);
+
   const addr = load.ship_to_address || customer?.shipping_address || {};
 
   const d = new Date(shipDate + 'T12:00:00');
   const formattedDate = (d.getMonth() + 1) + '-' + d.getDate() + '-' + String(d.getFullYear()).slice(2);
 
-  const descLines = ['American White Oak Barrels'];
-  if (specs.length > 0) {
+  const descLines = [];
+  if (isNonBarrel) {
     specs.forEach(s => {
-      const parts = [];
-      if (s.char_level) parts.push(s.char_level);
-      if (s.bung_orientation === 'Top Fill') parts.push('TF');
-      if (s.bung_orientation === 'Side Fill') parts.push('SF');
-      if (parts.length > 0) descLines.push(parts.join('-'));
-      descLines.push('New ' + (s.size || '53 Gal.'));
+      if (s.description) descLines.push(s.description);
+      if (s.quantity) descLines.push(s.quantity + (s.unit ? ' ' + s.unit : ''));
     });
+  } else {
+    descLines.push('American White Oak Barrels');
+    if (specs.length > 0) {
+      specs.forEach(s => {
+        const parts = [];
+        if (s.char_level) parts.push(s.char_level);
+        if (s.bung_orientation === 'Top Fill') parts.push('TF');
+        if (s.bung_orientation === 'Side Fill') parts.push('SF');
+        if (parts.length > 0) descLines.push(parts.join('-'));
+        descLines.push('New ' + (s.size || '53 Gal.'));
+      });
+    }
   }
   if (load.seal_number) descLines.push('S# ' + load.seal_number);
   if (load.po_number) descLines.push('PO# ' + load.po_number);
@@ -203,7 +216,7 @@ function buildBolHtml({ load, customer, carrier, shipperName, driverSigDataUrl, 
     </thead>
     <tbody>
       <tr>
-        <td style="font-size:15px;font-weight:bold;text-align:center;padding:8px 4px;">${shippingUnits}</td>
+        <td style="font-size:15px;font-weight:bold;text-align:center;padding:8px 4px;">${load.barrel_count}</td>
         <td></td>
         <td style="padding:8px 6px;font-size:11px;line-height:1.6;">${descHtml}</td>
         <td style="text-align:center;padding:8px 4px;">100</td>
